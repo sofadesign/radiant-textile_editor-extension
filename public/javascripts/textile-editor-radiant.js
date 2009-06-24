@@ -263,14 +263,22 @@ Object.extend(Object.extend(ImagePopup.prototype,Popup.prototype), {
   },
   
   initializeFields: function() {
+
     var imgPattern = /!([^!(]*)(\(([^)]+)\))?!/;
     var attachmentPattern = /<r:attachment:image name="([^"]+)"( alt="([^"]+)")?[^>]*\/>/;
+    var lightboxPattern = /<r:attachment:lightboxthumb name="([^"]+)"( title="([^"]+)")?[^>]*\/>/;
+ 
     if (this.textSelection['selectedText']) {
       if (this.textSelection['selectedText'].match(imgPattern)) {
         $('img_web_text').value = RegExp.$1;
         $('alt_text').value = RegExp.$3;
         this.switchTransformChoice($$("#image_transform_choice_link input")[0]);
       } else if (this.textSelection['selectedText'].match(attachmentPattern)) {
+        $('img_attachment_text').value = RegExp.$1;
+        $('alt_text').value = RegExp.$3;
+        this.switchTransformChoice($$("#image_transform_choice_attachment input")[0]);
+        if($('img_attachment_lightbox')) $('img_attachment_lightbox').checked = false;
+      } else if (this.textSelection['selectedText'].match(lightboxPattern)) {
         $('img_attachment_text').value = RegExp.$1;
         $('alt_text').value = RegExp.$3;
         this.switchTransformChoice($$("#image_transform_choice_attachment input")[0]);
@@ -296,14 +304,19 @@ Object.extend(Object.extend(ImagePopup.prototype,Popup.prototype), {
         }
       break
       case 'attachment':
+        var lightbox = $('img_attachment_lightbox').checked;
         attachment = $('img_attachment_text');
         attachmentValue = attachment.value;
-        if (altText == '') {
-          textInsert = '<r:attachment:image name="'+attachmentValue+'" />';
-        } else {
-          textInsert = '<r:attachment:image name="'+attachmentValue+'" alt="'+altText+'" />';
+        textInsert = '<r:attachment:';
+        textInsert += lightbox ? 'lightboxthumb' : 'image';
+        textInsert += ' name="' + attachmentValue + '" ';
+        if(altText != '') {
+           textInsert += lightbox ? 'title' : 'alt';
+           textInsert += '="'+altText+'" ';
         }
+        textInsert += '/>';
       break
+      // TODO  add <r:attachment:lightboxthumb /> case
       default: alert('something wrong'); 
     } 
 
