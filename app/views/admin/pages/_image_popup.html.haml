@@ -25,6 +25,10 @@
               #image_transform_input_attachment.transform_input{:style => "display:none;"}
                 - if @page.self_or_ancestors_have_attachments?
                   = select_tag('img_attachment_text',  option_groups_from_collection_for_select(@page.self_and_ancestors, :attachments, :title, :filename, :filename))
+                  - if Page.instance_methods.include?("tag:attachment:lightboxthumb")
+                    %label
+                      = check_box_tag('img_attachment_lightbox', 1, true)
+                      \ using lightbox
                   %p.help
                     %strong Is your image the right size and type?
                     Images need to be resized and compressed for the web using a graphics program like Photoshop.
