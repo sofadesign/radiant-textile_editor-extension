@@ -304,7 +304,7 @@ Object.extend(Object.extend(ImagePopup.prototype,Popup.prototype), {
         }
       break
       case 'attachment':
-        var lightbox = $('img_attachment_lightbox').checked;
+        var lightbox = $('img_attachment_lightbox') ? $('img_attachment_lightbox').checked : false;
         attachment = $('img_attachment_text');
         attachmentValue = attachment.value;
         textInsert = '<r:attachment:';
