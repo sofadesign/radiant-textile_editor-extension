@@ -8,6 +8,7 @@ describe "/admin/pages/edit" do
     assigns[:page] = @page
     assigns[:meta] = []
     assigns[:buttons_partials] = []
+    assigns[:template_name] = "edit"
   end
   
   describe "without other extensions" do
@@ -22,6 +23,8 @@ describe "/admin/pages/edit" do
     end
   
     it "should not show attachments in the popups without the page_attachments extension" do
+      # Assuming this extension is being developed in isolation
+      Page.instance_methods.should_not include("attachments") # Ensuring page_attachments extension is not installed
       popups_section.should have_image_popup do
         popups_section.should_not have_attachment_radio_button
         popups_section.should_not have_image_select
@@ -32,8 +35,8 @@ describe "/admin/pages/edit" do
       end
     end
     it "should not show email option in the link popup without the enkoder_tags extension" do
-      # Assuming this exetnsion is being developed in isolation
-      Page.instance_methods.include?("tag:enkode_mailto") # Ensuring enkode_mailto extension is not installed
+      # Assuming this extension is being developed in isolation
+      Page.instance_methods.should_not include("tag:enkode_mailto") # Ensuring enkode_mailto extension is not installed
       popups_section.should_not have_email_radio_button
     end
   end
@@ -130,23 +133,6 @@ describe "/admin/pages/edit" do
         popups_section.should have_tag("optgroup") do
           with_tag("option[value=?]", "test.jpg")
         end
-      end
-    end
-  
-    it "should show a helpful message instead of a select because there are no attachments" do
-      assigns[:page].stub!(:attachments).and_return([])
-      render '/admin/pages/edit'
-    
-      popups_section.should have_image_popup do
-        popups_section.should have_attachment_radio_button
-        popups_section.should_not have_image_select
-        popups_section.should have_tag("div#image_transform_input_attachment", /There are no images attached to this page./)
-      end
-      popups_section.should have_link_popup do
-        popups_section.should have_attachment_radio_button
-        popups_section.should_not have_attachment_select
-        popups_section.should have_tag("div#transform_input_attachment", /There are no files attached to this page./)
-      
       end
     end
   end
